@@ -1,4 +1,4 @@
-import { Body, Controller, Get, InternalServerErrorException, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiInternalServerErrorResponse,
@@ -36,7 +36,7 @@ export class RaidController {
    *  - 리턴값에 맞게 레이드 레코드 아이디는 제외합니다
    */
   @ApiOperation({ description: '레이드 상태 조회 api입니다', summary: '레이드 상태 조회' })
-  @ApiResponse({ type: RaidStatusRes, status: MSG.getRaidStatus.code, description: MSG.getRaidStatus.msg })
+  @ApiResponse({ status: MSG.getRaidStatus.code, description: MSG.getRaidStatus.msg })
   @ApiInternalServerErrorResponse({ status: ErrorType.redisError.code, description: ErrorType.redisError.msg })
   @ApiNotFoundResponse({ status: ErrorType.raidStatusNotFound.code, description: ErrorType.raidStatusNotFound.msg })
   @Get()
@@ -60,9 +60,11 @@ export class RaidController {
    * @description 레이드 시작 컨트롤러
    */
   @ApiBody({ type: RaidEnterDto })
-  @ApiCreatedResponse({
-    description: MSG.enterBossRaid.msg,
+  @ApiOperation({
+    description: '레이드를 시작합니다. 레이드 기록을 생성합니다.',
+    summary: '레이드 시작',
   })
+  @ApiCreatedResponse({ status: MSG.enterBossRaid.code, description: MSG.enterBossRaid.msg })
   @Post('enter')
   async enterRaid(@Body() raidEnterDto: RaidEnterDto) {
     const result = await this.raidService.enterBossRaid(raidEnterDto);
@@ -75,22 +77,24 @@ export class RaidController {
    * @작성자 김용민
    * @description 레이드 종료 컨트롤러
    */
-  @ApiOperation({ 
-    description: '진행 중인 레이드를 종료합니다. 해당 기록과 사용자 랭킹을 업데이트합니다.', 
-    summary: '레이드 종료', 
+  @ApiOperation({
+    description: '진행 중인 레이드를 종료합니다. 해당 기록과 사용자 랭킹을 업데이트합니다.',
+    summary: '레이드 종료',
   })
   @ApiBody({ type: RaidEndDto })
-  @ApiResponse({ type: RaidStatusRes, status: MSG.endBossRaid.code, description: MSG.endBossRaid.msg })
+  @ApiResponse({ status: MSG.endBossRaid.code, description: MSG.endBossRaid.msg })
   @Patch('end')
-  endRaid(@Body() raidEndDto: RaidEndDto): Promise<void> {
-    return this.raidService.endRaid(raidEndDto);
+  endRaid(@Body() raidEndDto: RaidEndDto) {
+    this.raidService.endRaid(raidEndDto);
+    return MSG.endBossRaid.msg;
   }
 
   /**
    * @작성자 염하늘
    * @description 레이드 유저 랭킹 조회 컨트롤러
    */
-  @ApiOperation({ description: '레이드 유저 랭킹 조회 api입니다', summary: '레이드 랭킹 조회' })
+  @ApiOperation({ description: '레이드 유저 랭킹 조회 api입니다.', summary: '레이드 랭킹 조회' })
+  @ApiResponse({ status: MSG.getRank.code, description: MSG.getRank.msg })
   @ApiBody({ type: TopRankerListDto })
   @Post('topRankerList')
   topRankerList(@Body() raidRankDto: TopRankerListDto) {

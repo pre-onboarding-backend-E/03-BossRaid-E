@@ -6,7 +6,7 @@ import { RaidRecord } from './entities/raid.entity';
 import { RaidController } from './raid.controller';
 import { RaidService } from './raid.service';
 import { BullModule } from '@nestjs/bull';
-import { RaidConsumer } from '../utils/helper/raid.consumer';
+import { RaidConsumer } from './raid.consumer';
 
 @Module({
   imports: [
