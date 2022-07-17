@@ -1,7 +1,6 @@
-import { InjectQueue, Process, Processor } from '@nestjs/bull';
+import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
-import { Job, Queue } from 'bull';
-import { RaidService } from 'src/raid/raid.service';
+import { Job } from 'bull';
 
 /**
  * @작성자 박신영
@@ -10,11 +9,6 @@ import { RaidService } from 'src/raid/raid.service';
 @Processor('playerQueue')
 export class RaidConsumer {
   private readonly logger = new Logger(RaidConsumer.name);
-  constructor(
-    private raidService: RaidService,
-    @InjectQueue('playerQueue')
-    private playerQueue: Queue,
-  ) {}
 
   @Process('player')
   async handleQueue(job: Job) {
