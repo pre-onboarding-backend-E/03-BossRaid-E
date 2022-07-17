@@ -75,7 +75,12 @@ export class RaidController {
    * @작성자 김용민
    * @description 레이드 종료 컨트롤러
    */
+  @ApiOperation({ 
+    description: '진행 중인 레이드를 종료합니다. 해당 기록과 사용자 랭킹을 업데이트합니다.', 
+    summary: '레이드 종료', 
+  })
   @ApiBody({ type: RaidEndDto })
+  @ApiResponse({ type: RaidStatusRes, status: MSG.endBossRaid.code, description: MSG.endBossRaid.msg })
   @Patch('end')
   endRaid(@Body() raidEndDto: RaidEndDto): Promise<void> {
     return this.raidService.endRaid(raidEndDto);
