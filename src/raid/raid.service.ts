@@ -43,7 +43,7 @@ export class RaidService {
     @InjectRedis() private readonly redis: Redis,
     private readonly connection: Connection,
   ) {
-    this.staticDataCaching(); // 보스레이드 정보 초기화
+    this.staticDataCaching();
   }
 
   /**
@@ -135,27 +135,31 @@ export class RaidService {
   /**
    * @작성자 김용민
    * @description 레이드 종료에 관한 비지니스 로직 구현
+   * - 레디스의 레이드 상태값과 DB에 있는 레이드 기록을 가져옵니다.
+   * - 레이드 상태와 레이드 기록이 유효하다면 레이드 기록과 유저에 스코어를 반영합니다.
+   * - 해당 레이드 기록과 유저 정보를 DB에 저장합니다.
+   * - 진행 중인 레이드 상태를 레디스에서 삭제하여 종료합니다.
+   * - 레디스에 유저 랭킹 정보를 등록합니다.
    */
   async endRaid(raidEndDto: RaidEndDto): Promise<void> {
     const { userId, raidRecordId } = raidEndDto;
     const raidStatus: IRaidStatus = await this.cacheManager.get('raidStatus');
 
-    // 레이드 상태가 유효한 값인지 확인
-    await this.checkRaidStatus(raidStatus, userId, raidRecordId);
+    this.checkRaidStatus(raidStatus, userId, raidRecordId);
 
     const record: RaidRecord = await this.getRaidRecordById(raidRecordId);
     const score = await this.cacheManager.get(`level_${record.level}`);
     if (!score) {
       throw new BadRequestException(ErrorType.raidLevelNotFound.msg);
     }
-    record.score = Number(score); // 레이드 기록에 보스 레벨에 따른 스코어 반영
+    record.score = Number(score);
 
     const user: User = await this.userService.getUserById(userId);
-    user.totalScore = user.totalScore + record.score; // 유저의 totalScore 변경
+    user.totalScore = user.totalScore + record.score;
 
-    await this.saveRaidRecord(user, record); // 레이드 기록 DB에 저장
-    await this.cacheManager.del('raidStatus'); // 진행 중인 보스레이드 레디스에서 삭제
-    await this.updateUserRanking(userId, record.score); // 유저 랭킹 업데이트
+    await this.saveRaidRecord(user, record);
+    await this.cacheManager.del('raidStatus');
+    await this.updateUserRanking(userId, record.score);
   }
 
   /**
@@ -310,14 +314,14 @@ export class RaidService {
   /**
    * @작성자 김용민
    * @description 레이드 상태가 유효한 값인지 확인
+   * - 레이드 상태가 없는 경우
+   * - 레이드 상태와 request body가 일치하지 않는 경우
    */
   checkRaidStatus(raidStatus: IRaidStatus, userId: number, raidRecordId: number) {
-    // raidStatus가 없다면 레이드가 진행 중이지 않거나 시간 초과
     if (!raidStatus) {
       throw new NotFoundException(ErrorType.raidStatusNotFound.msg);
     }
 
-    // 사용자 불일치 or 레이드 기록 불일치
     if (raidStatus.enteredUserId !== userId || raidStatus.raidRecordId !== raidRecordId) {
       throw new BadRequestException(ErrorType.raidStatusBadRequest.msg);
     }
