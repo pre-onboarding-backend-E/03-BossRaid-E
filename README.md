@@ -59,6 +59,7 @@ Boss Raid PVE 컨텐츠와 관련한 API를 개발합니다. 사용자는 보스
 - Docker & GCP를 이용한 배포: http://34.64.75.124:3000/api/docs
 - Lint, Prettier 포맷팅
 - [Ref. Commit Convention](https://github.com/pre-onboarding-backend-E/03-BossRaid-E/wiki/Commit-Convention)
+- [Sentry를 활용한 Error 모니터링](https://user-images.githubusercontent.com/57704568/179357140-62f7f00c-fa7c-4599-94ed-af7eb9de9fe8.PNG)
 
 <br />
 
