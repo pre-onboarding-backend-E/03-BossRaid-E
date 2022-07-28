@@ -18,7 +18,7 @@ import { Cache } from 'cache-manager';
 import { TopRankerListDto } from './dto/topRankerList.dto';
 import { IRankingInfo } from './interface/rankingInfo.interface';
 import { ErrorType } from 'src/utils/responseHandler/error.enum';
-import { InjectQueue, Processor } from '@nestjs/bull';
+import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import AxiosHelper from '../utils/helper/axiosHelper';
 import moment from 'moment';
@@ -28,7 +28,6 @@ import Redis from 'ioredis';
 import { IRaidStatus } from './interface/raidStatus.interface';
 
 @Injectable()
-@Processor('playerQueue')
 export class RaidService {
   constructor(
     @InjectRepository(RaidRecord)
