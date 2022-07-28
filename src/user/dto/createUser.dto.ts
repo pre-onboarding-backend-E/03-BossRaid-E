@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDTO {
   @ApiProperty({ description: '이메일', example: 'test@mail.com' })
@@ -34,7 +27,7 @@ export class CreateUserDTO {
   @MinLength(2)
   @MaxLength(16)
   @Matches(/^[ㄱ-ㅎ가-힣a-zA-Z0-9]*$/, {
-    message: '닉네임은 2~16글자의 영문과 숫자만 가능합니다.',
+    message: '닉네임은 2~16글자의 한글과 영문, 숫자만 가능합니다.',
   })
   @IsNotEmpty()
   readonly nickname: string;

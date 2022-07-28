@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, IsNotEmptyObject, IsNumber, IsObject, Min } from 'class-validator';
 
 /**
- * 작성자 : 김지유
+ * @작성자 김지유
  */
 export abstract class BossRaidRecord {
   @ApiProperty({ description: '레이드 기록 id', example: '1' })
@@ -27,7 +27,7 @@ export abstract class BossRaidRecord {
 }
 
 /**
- * 작성자 : 김지유
+ * @작성자 김지유
  */
 export class UserInfoDTO {
   @ApiProperty({ description: '총 점수', example: 30 })

@@ -1,6 +1,5 @@
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDTO } from '../dto/createUser.dto';
 import { User } from '../entities/user.entity';
@@ -227,17 +226,6 @@ describe('UserService', () => {
   });
 
   describe('refresh token 관리', () => {
-    // it('refreshToken 암호화 및 저장', () => {
-    //   // const result = setCurrentRefreshToken(refreshToken, email) {
-    //   //
-    //   // }
-    //   return;
-    // });
-
-    // it('refreshToken 유효성 확인', () => {
-
-    // });
-
     it('refreshToken 삭제', async () => {
       const id = 1;
       userMockRepository.update.mockResolvedValue(null);

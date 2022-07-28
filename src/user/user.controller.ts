@@ -1,6 +1,15 @@
 import { Body, Controller, Post, UseGuards, Res, Get, Param } from '@nestjs/common';
 import { JwtRefreshGuard } from 'src/auth/passport/guard/jwtRefreshGuard';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginDto } from 'src/user/dto/login.dto';
@@ -13,6 +22,7 @@ import { GetUser } from 'src/utils/helper/getUserDecorator';
 import { MSG } from 'src/utils/responseHandler/response.enum';
 import { defaultTokenOption } from 'src/utils/interface/tokenOption.interface';
 import { JwtAuthGuard } from 'src/auth/passport/guard/jwtAuthGuard';
+import { ErrorType } from 'src/utils/responseHandler/error.enum';
 
 @ApiTags('user')
 @Controller('user')
@@ -39,7 +49,10 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(JwtAuthGuard)
   @Get('/:userId')
-  @ApiCreatedResponse({ description: MSG.getUser.msg, type: LookupUserResponse })
+  @ApiUnauthorizedResponse({ status: ErrorType.unAuthorized.code, description: ErrorType.unAuthorized.msg })
+  @ApiNotFoundResponse({ status: ErrorType.userNotFound.code, description: ErrorType.userNotFound.msg })
+  @ApiResponse({ description: MSG.getUser.msg, type: LookupUserResponse })
+  @ApiOperation({ description: '유저의 레이드 기록 및 총 점수 조회 api 입니다.', summary: '유저 기록 조회' })
   async getUserInfo(@Param('userId') userId: number) {
     const result = await this.userService.getUserInfo(userId);
 

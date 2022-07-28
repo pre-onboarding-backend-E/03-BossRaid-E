@@ -64,19 +64,19 @@ export class UserService {
    */
   async getUserInfo(id: number): Promise<UserInfoDTO | undefined> {
     try {
-      // version 1. 살짝 무식한 방법...
-      // createQueryBuilder 디깅 후 Refactoring 예정
-      // 유저의 총 점수 및 레이드 기록을 불러온 후, 레이드 기록을 Array.prototype.map() 으로 형태 가공
+      // 요구사항의 Response 에 맞게 해당 유저의 totalScore 만 가져옴
       const users = await this.userRepository.find({
         where: { id },
         relations: ['raids'],
         select: ['totalScore'],
       });
 
+      // ReturnType<Repository<User>.find> = User[]
       if (!users.length) {
         throw new NotFoundException(ErrorType.userNotFound.msg);
       }
 
+      // 요구사항의 Response 에 맞게 가공
       const { totalScore, raids } = users[0];
       const bossRaidHistory = raids.map(({ id: raidRecordId, score, enterTime, endTime }) => ({
         raidRecordId,
