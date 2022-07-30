@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Connection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { RaidEndDto } from './dto/raidEnd.dto';
 import { RaidRecord } from './entities/raid.entity';
 import { RaidEnterDto } from './dto/raidEnter.dto';
@@ -41,7 +41,7 @@ export class RaidService {
     @InjectQueue('playerQueue')
     private playerQueue: Queue,
     @InjectRedis() private readonly redis: Redis,
-    private readonly connection: Connection,
+    private readonly dataSource: DataSource,
   ) {
     this.staticDataCaching();
   }
@@ -284,7 +284,7 @@ export class RaidService {
    * @description 레이드 종료 시 레이드 기록과 유저 정보를 트랜잭션으로 DB에 저장
    */
   async saveRaidRecord(user: User, record: RaidRecord): Promise<void> {
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction('SERIALIZABLE');
     try {
